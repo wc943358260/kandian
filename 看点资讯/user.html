@@ -1,0 +1,304 @@
+<div class="rightBody">
+	<div class="user-title btns-div">
+		<div class="row head">
+            <div class="col-md-6">
+                <div class="input-group" style="margin-left: 15px">
+                    <input type="text" class="form-control" placeholder="搜你想要的" style="">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2 btnAdd">
+				<button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" data-show=true>新增</button>
+			</div>
+        </div>
+	</div>
+	<div class="row user-div">
+		<!-- <div class="col-md-4">
+			<div class="thumbnail">
+				<img src="" style="width: 150px;height: 150px">
+				<div class="caption">
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1">1</div>
+						<div class="col-md-7"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1">2</div>
+						<div class="col-md-7"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1">3</div>
+						<div class="col-md-7"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1">4</div>
+						<div class="col-md-7"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-7 col-md-offset-1">4</div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-success">删除</button>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">2</div>
+		<div class="col-md-4">3</div> -->
+	</div>
+
+	<!-- 模态框 添加信息 -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-md" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加或修改用户</h4>
+				    </div>
+				<div class="modal-body">
+				    <form>
+				        <div class="form-group">
+				           	<label for="recipient-name" class="control-label">用户名:</label>
+				            <input type="text" class="form-control userName" id="recipient-name">
+				        </div>
+				       <div class="form-group">
+				           	<label for="recipient-name" class="control-label">密码:</label>
+				            <input type="text" class="form-control userPassword" id="recipient-name">
+				        </div>
+				        <div class="form-group">
+				           	<label for="recipient-name" class="control-label">确认密码:</label>
+				            <input type="text" class="form-control userCheckpwd" id="recipient-name">
+				        </div>
+				        <div class="form-group">
+				           	<label for="recipient-name" class="control-label">真实姓名:</label>
+				            <input type="text" class="form-control userNickname" id="recipient-name">
+				        </div>
+				        <div class="form-group">
+				           	<label for="recipient-name" class="control-label">邮箱:</label>
+				            <input type="text" class="form-control userEmail" id="recipient-name">
+				        </div>
+				    </form>
+				</div>
+				<div class="modal-footer">
+				    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				    <button type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var baseURL = 'http://134.175.154.93:8099';
+		findAllUser();
+		// 获取时间
+		var myDate = new Date(); 
+		var year=myDate.getFullYear();
+		var month=myDate.getMonth()+1;
+		var date=myDate.getDate(); 
+		var h=myDate.getHours();  
+		var m=myDate.getMinutes();
+		var s=myDate.getSeconds(); 
+		if(s<10){
+			s += '0';
+		};
+		var now = year+'-'+month+'-'+date+' '+h+':'+m+':'+s;
+		// 点击新建按钮 弹出模态框后的点击提交事件
+		$('div.modal-footer').click(function(event){
+			var target = event.target;
+			if(target.innerText === '提交'){
+				//获取填入的数据
+				var username = $('.modal-content .userName').val();
+				var password = $('.modal-content .userPassword').val();
+				var checkPassword = $('.modal-content .userCheckpwd').val();
+				var nickname = $('.modal-content .userNickname').val();
+				var email = $('.modal-content .userEmail').val();
+				var time = now;
+				if(username&&password&&checkPassword&&nickname&&email&&password===checkPassword){
+					console.log(username,password,nickname,email);
+					var obj = {
+						username : username,
+						password : password,
+						nickname : nickname,
+						email : email,
+						regTime : now,
+					}
+					console.log(1);
+					//调用新增方法 
+					saveOrUpdateUser(obj);
+					$('#myModal').modal('hide');
+					window.alert('新建成功');
+					$('.rightContent').load('./user.html');
+				}else if(password&&checkPassword&&password!==checkPassword){
+					alert('密码不一致');
+					$('#myModal').modal('show');
+				}else{
+					alert('请将信息填充完全');
+					$('#myModal').modal('show');
+				}
+			}
+		});
+		// 查询点击
+		$('div.btns-div').click(function(event){
+			var target = event.target;
+			if($(target).hasClass('glyphicon')){
+				var search = $('div.btns-div input.form-control').val();
+				findUserByUsername({username:search});
+			}
+		})
+		// 删除点击
+		$('div.user-div').click(function(event){
+			var target = event.target;
+			if(target.title=='删除'){
+				var id = target.getAttribute('data-id');
+				// console.log(id);
+				deleteUserById({id:id});
+				// window.alert('删除成功!');
+				$('.rightContent').load('./user.html');
+			}
+		})
+		// 修改状态点击
+		$('div.user-div').click(function(event){
+			var target = event.target
+			var id = target.getAttribute('data-id');
+			if($(target).hasClass('btnStatus')){
+				if($(target).text()==='false'){
+					changeStatus({id:id,status:true});
+				}else{
+					changeStatus({id:id,status:false});
+				}	
+				$('.rightContent').load('./user.html');
+			}
+		})
+		
+		// 修改用户状态
+		function changeStatus(obj){
+			getAjax('/manager/user/changeStatus','post',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 新增用户
+		function saveOrUpdateUser(obj){
+			getAjax('/manager/user/saveOrUpdateUser','post',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		
+		// 删除用户
+		function deleteUserById(obj){
+			getAjax('/manager/user/deleteUserById','get',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 通过用户名查询用户信息
+		function findUserByUsername(obj){
+			getAjax('/manager/user/findUserByUsername','get',obj,function(res){
+				result = res.data;
+				$('div.user-div').html('');
+				$('div.user-div').append(`
+					<div class="col-md-4" data-id=`+result.id+`>
+							<div class="thumbnail">
+								<img class="img-circle" src="./img/timg.jpg" style="width: 150px;height: 150px">
+								<div class="caption">
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">用户名</div>
+											<div class="col-md-7">`+result.username+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">真实姓名</div>
+											<div class="col-md-7">`+result.nickname+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">注册时间</div>
+											<div class="col-md-7">`+result.regTime+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">email</div>
+											<div class="col-md-7">`+result.email+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">状态</div>
+											<button type="button" class="btn btnStatus" id="status" value="`+result.enabled+`" data-id=`+result.id+`>`+result.enabled+`</button>
+										</div>
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1"></div>
+											<div class="col-md-4">
+												<button title="删除" type="button" class="btn btn-success" data-id=`+result.id+`>删除</button>
+											</div>
+										</div>
+								</div>
+							</div>
+					</div>	
+					`)
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 显示用户
+		function findAllUser(){
+			getAjax('/manager/user/findAllUser','get',null,function(res){
+				result = res.data;
+				result.forEach(function(item,index){
+					if(item.regTime==null){
+						item.regTime = '-';
+					}
+					$('div.user-div').append(`
+						<div class="col-md-4" data-id=`+item.id+`>
+							<div class="thumbnail">
+								<img class="img-circle" src="./img/timg.jpg" style="width: 150px;height: 150px">
+								<div class="caption">
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">用户名</div>
+											<div class="col-md-7">`+item.username+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">真实姓名</div>
+											<div class="col-md-7">`+item.nickname+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">注册时间</div>
+											<div class="col-md-7">`+item.regTime+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">email</div>
+											<div class="col-md-7">`+item.email+`</div>
+										</div>
+										<div class="row rowSpan">
+											<div class="col-md-4 col-md-offset-1">状态</div>
+											<button type="button" class="btn btnStatus" id="status" value="`+item.enabled+`" data-id=`+item.id+`>`+item.enabled+`</button>
+										</div>
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1"></div>
+											<div class="col-md-4">
+												<button title="删除" type="button" class="btn btn-success" data-id=`+item.id+`>删除</button>
+											</div>
+										</div>
+								</div>
+							</div>
+						</div>	
+					`)
+				});
+				// 根据状态改变网页
+				$('button#status').each(function(index,item){
+					if($(item).val()==='false'){
+						$(item).addClass('btn-danger');
+					}else{
+						$(item).addClass('btn-primary');
+					}
+				})
+		 	},function(error){
+		 		console.log(error);
+		 	});
+		}
+		
+		
+	</script>
+</div>
+

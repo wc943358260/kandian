@@ -1,0 +1,181 @@
+/*首页左部*/
+.leftDiv{
+	height: 100%;
+	width: 17%;
+	background-color: #fff;
+	display: inline-block;
+	background: #282830;
+}
+.leftTitle{
+	line-height: 50px;
+	color: #fff;
+	height: 50px;
+	background: #3D556D;
+	font-size: 20px;
+	font-family: "微软雅黑";
+}
+.leftTitle img{
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	left: 20px;
+	top: 5px;
+}
+.leftContent{
+	height: calc(100% - 60px);
+	padding-top: 20px;	
+	background-color: #282830;
+}
+.leftContent li{
+	padding: 10px 0 10px 10px;
+	line-height: 30px;
+    font-size: 18px;
+    border-bottom: 2px solid #333333;
+    cursor: pointer;
+    color: #fff;
+}
+.leftContent li:hover{
+	color: coral;
+}
+.leftContent span{
+	line-height: 25px;
+	margin: 0 5px;
+}
+.leftContent span.floatRight{
+	margin-right: 20px;
+}
+
+/*首页右部*/
+.rightDiv{
+	height: 100%;
+	width: 83%;
+	float: right;	
+	background: #DCDCDC;
+}
+/*顶部菜单*/
+.rightTop{
+	background-color: #fff;
+	height: 50px;
+}
+/*顶部左部*/
+.rightTop .noticeDiv{
+	position: relative;
+}
+.rightTop .noticeDiv span{
+	font-size: 22px;
+	position: absolute;
+}
+.rightTop .noticeDiv span.glyphicon-list{
+	left: 20px;
+	top: 12px;
+}
+.rightTop .noticeDiv span.glyphicon-volume-up{
+	font-size: 30px;
+	left: 80px;
+	top: 8px;
+}
+.rightTop .noticeDiv span.attention{
+	background-color: red;
+	border-radius: 50%;
+	color: #fff;
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	line-height: 20px;
+	font-size: 20px;
+	left: 100px;
+	top: 8px;
+}
+/*顶部右部*/
+.rightTop .infoDiv{
+	line-height: 50px;
+	height: 50px;
+	margin-right: 30px;
+}
+.rightTop .infoDiv *{
+	margin: 0 3px;
+}
+.rightTop .infoDiv img{
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+.rightTop .infoDiv span{
+	font-size: 18px;
+}
+
+.rightContent{
+	padding: 10px;
+	background-color: #DCDCDC;
+	height: calc(100% - 60px);
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.rightBody{
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	background-color: #fff;
+}
+
+/*category页面*/
+.category{
+	background-color: #fff;
+	border-radius: 5px;
+}
+.category-title{
+	margin-top: 10px;
+	padding: 0 10px;
+}
+.table-div{
+	margin-top: 10px;
+}
+.table-div th,.table-div td{
+	margin-top: 10px;
+	text-align: center;
+}
+.table-div td i{
+	cursor: pointer;
+	margin-right: 5px;
+}
+.table-div td i[title=编辑]{
+	color:#5cb85c;
+}
+.table-div td i[title=删除]{
+	color:#c9302c;
+}
+
+/*info页面*/
+#lanmu{
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	position: relative;
+	top: 2px;
+}
+div.modal img{
+	width: 240px;
+	height: 100px;
+}
+
+/*user页面*/
+.btnAdd{
+	padding-left: 0;
+}
+.user-title{
+	margin: 10px 0;
+}
+.rowSpan{
+	margin: 10px 0;
+}
+.rowSpanPlus{
+	margin: 20px 0;
+}
+div.thumbnail{
+	box-shadow: 3px 3px 3px #ccc;
+}
+
+/*home页面*/
+.outerDiv{
+	width: 95%;
+	margin: 0 auto;
+}

@@ -1,0 +1,230 @@
+<div class="rightBody">
+	<div id="category-manage" class="category overFlow">
+		<div class="category-title btns-div">
+			<button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" data-show=true>新增</button>
+			<button type="button" class="btn btn-danger">批量删除</button>
+		</div>
+		<div class="table-div">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>编号</th>
+						<th>名称</th>
+						<th>父栏目</th>
+						<th>描述</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+	<!-- 模态框 添加信息 -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-md" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加或修改栏目</h4>
+				    </div>
+				<div class="modal-body">
+				    <form>
+				        <div class="form-group">
+				           	<label for="recipient-name" class="control-label">栏目名称:</label>
+				            <input type="text" class="form-control" id="recipient-name">
+				        </div>
+				        <div class="form-group">
+				          	<label for="">父栏目</label>
+				          		<select class="form-control" name="categoryParent">
+				          			<option value="">请选择</option>
+				          		</select>
+				        </div>
+				        <div class="form-group">
+					        <label for="message-text" class="control-label">描述:</label>
+					        <textarea class="form-control" id="message-text" rows="8" ></textarea>
+				        </div>
+				    </form>
+				</div>
+				<div class="modal-footer">
+				    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				    <button type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var data = [];
+		var baseURL = 'http://134.175.154.93:8099';
+		getAllCategory();
+
+		// 创建父栏目选项
+		getAjax('/manager/category/findAllCategory','get',null,function(res){
+			result = res.data;
+			var parentArr = [];
+			//存放父栏目名称
+			result.forEach(function(item,index){
+				parentArr.push(item.name);
+			});
+			// 删除重复项
+			uniqueArray(parentArr);
+			parentArr.unshift('-');
+			parentArr.forEach(function(arrItem,index){
+				$('div.modal-body select').append(`
+					<option value="`+arrItem+`">`+arrItem+`</option>
+				`);
+			});
+		},function(error){
+			console.log(error);
+		});
+		// 点击批量删除事件
+		$('.btns-div>button').click(function(){
+			var target = event.target;
+			if(target.innerText==='批量删除'){
+				var inputs = Array.prototype.slice.call($('tbody input'),0);
+				var ids = inputs.filter(function(item){
+						return item.checked;
+					}).map(function(item){
+						return item.value;
+					});
+				if(ids.length != 0){
+					batchDeleteCategory({ids:ids.join()});	
+					window.alert('批量删除成功!');
+					$('.rightContent').load('./category.html');
+				}else{
+					window.alert('请选择删除项!')
+				}
+			}
+		})
+		
+		// 模态框点击提交
+		$('div.modal').click(function(event){
+			var target = event.target;
+			var obj = {};
+			if(target.innerText === '提交'){
+				var name = $('.modal-content input[type=text]').val();
+				var parent = $('.modal-content select').val();
+				var comment = $('.modal-content textarea').val();
+				// 创建首栏目
+				if(!(name&&parent&&comment)||parent=='请选择'){
+					alert('请将信息填充完全');
+					$('#myModal').modal('show');
+				}else if(parent=='-'){
+					obj = {
+						name : name,
+						parentId : null,
+						comment : comment,
+					}
+					saveOrUpdateCategory(obj);
+					$('#myModal').modal('hide');
+					window.alert('新建成功!');
+					$('.rightContent').load('./category.html');
+				}else{
+					//创建子栏目
+					//根据父栏目名称获得父栏目
+					getAjax('/manager/category/findAllCategory','get',null,function(res){
+						result = res.data;
+						result.forEach(function(item,index){
+							if(item.name == parent){
+								//根据父栏目名称获得父栏目id
+								parent = item.id;
+								obj = {
+									name : name,
+									parentId : parent,
+									comment : comment,
+								}
+								//调用新增方法 
+								saveOrUpdateCategory(obj);
+								$('#myModal').modal('hide');
+								window.alert('新建成功!');
+								$('.rightContent').load('./category.html');
+							}
+						})
+					},function(error){
+						console.log(error);
+					});
+				}
+			}
+		})
+		
+		// 删除点击
+		$('table').click(function(event){
+			var target = event.target;
+			if(target.title=='删除'){
+				var id = target.getAttribute('data-id');
+				deleteCategoryById({id:id});
+				window.alert('删除成功!');
+				$('.rightContent').load('./category.html');
+			}
+			if(target.title=='编辑'){
+				// console.log(target.getAttribute('data-id'));
+				var changeId = target.getAttribute('data-id')
+				// console.log(changeId);
+				
+				var changeTr = $('tbody tr').filter(function(index,item){
+					if(item.getAttribute('data-id')===changeId)
+					return item;
+				});
+				$('.modal-content input[type=text]').val(changeTr.children()[1].innerText);
+				$('.modal-content textarea').val(changeTr.children()[3].innerText);
+				// 第一项显示原父栏目名
+				$('select option:first').text($($(changeTr[0]).children()[2]).text());
+			}
+		})
+		$('')
+
+		// 新增
+		function saveOrUpdateCategory(obj){
+			getAjax('/manager/category/saveOrUpdateCategory','post',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 批量删除
+		function batchDeleteCategory(obj){
+			getAjax('/manager/category/batchDeleteCategory','post',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 删除
+		function deleteCategoryById(obj){
+			getAjax('/manager/category/deleteCategoryById','get',obj,function(res){
+				console.log(res);
+			},function(error){
+				console.log(error);
+			});
+		}
+		// 显示
+		function getAllCategory(){
+			getAjax('/manager/category/findAllCategory','get',null,function(res){
+				result = res.data;
+				result.forEach(function(item,index){
+					if(item.parent==null){
+						item.parent = {name:'-'};
+					}
+					$('table tbody').append(`
+						<tr data-id=`+item.id+`>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+						 	<td>`+item.name+`</td>
+						 	<td>`+item.parent.name+`</td>
+						 	<td>`+item.comment+`</td>
+						 	<td>
+						 		<i title="编辑" class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal" 
+						 			data-target="#myModal" 
+						 			data-id=`+item.id+`></i>
+								<i title="删除" class="fa fa-trash-o" aria-hidden="true" data-id=`+item.id+`></i>
+						 	</td>
+						</tr>
+					`)
+					$('select option:first').val('请选择');
+				});
+			},function(error){
+				console.log(error);
+			});
+		}
+	</script>
+</div>
+

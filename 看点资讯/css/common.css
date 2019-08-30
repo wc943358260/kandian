@@ -1,0 +1,57 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+ol,ul{
+    list-style: none;
+}
+div.whole,body,html{
+	height: 100%;
+	font-family: "宋体";
+	color: #333;
+}
+.block{
+	display: block;
+}
+/*行内元素块级显示*/
+.inlineBlock{
+	display: inline-block;
+}
+/*文本居中*/
+.textCenter{
+	text-align: center;
+}
+/*文本单行*/
+.textLimit{
+     width: 100%;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+}
+/*行内元素垂直居中*/
+.verticleMid{
+	vertical-align: middle;
+}
+/*浮动*/
+.floatLeft{
+	float: left;
+}
+.floatRight{
+	float: right;
+}
+/*清除浮动*/
+.clearFloat::after{
+	content: "";
+	display: block;
+	clear: both;
+	visibility: hidden;
+}
+/*BFC*/
+.overFlow{
+	overflow: hidden;
+}
+/*清除padding*/
+.clearpadding{
+	padding: 0;
+}
